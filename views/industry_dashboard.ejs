@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VitalNest</title>
+    <link rel = "stylesheet" href = "/static/style.css">
+</head>
+<body>
+    <h1>Vital Nest pharma Industry Dashboard {{ind_id}}</h1>
+    <hr>
+    <div>
+        <h2>Medicine data</h2>
+        <table border="1" cellpadding="5" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Uses</th>
+                    <th>Side Effects</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for medicine in medicines %}
+                <tr>
+                    <td>{{ medicine[0] }}</td>
+                    <td>{{ medicine[1] }}</td>
+                    <td>{{ medicine[2] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <hr>
+    <form action="/newMedicine" method="post">
+        
+        <input type="hidden" name="ind_id" value="{{ind_id}}">
+
+        <label>Tablet Name:</label><br>
+        <input type="text" name="med_name" required><br><br>
+        
+        <label>Uses:</label><br>
+        <input type="text" name="uses"><br><br>
+
+        <label>Side Effects:</label><br>
+        <input type="text" name="side_effects"><br><br>
+        
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
