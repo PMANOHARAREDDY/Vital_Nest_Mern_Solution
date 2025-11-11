@@ -124,7 +124,7 @@ app.post('/login', async (req, res) => {
         }
       }
     ]);
-    const approval_data = await RegistrationApprovalData.find({ approval_status: 'not approved' });
+    const approval_data = await RegistrationApprovalData.find({ approval_status: 'Not Approved' });
     const pending_blood_requests = await BloodDonationRequests.find({ status: 'pending' }).sort({ request_timestamp: -1 });
     const approved_blood_requests = await BloodDonationRequests.find({ status: 'approved' }).sort({ request_timestamp: -1 });
     const blood_units = await BloodUnitsAvailable.find().sort({ blood_group: 1 });
