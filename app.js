@@ -50,10 +50,7 @@ app.get('/', (req, res) => res.render('index'));
 app.post('/login', async (req, res) => {
   let { aadhar, passwd } = req.body;
   aadhar = Number(aadhar);
-  console.log(aadhar);
-  console.log(passwd);
   const user = await AclList.findOne({ aadhar });
-  console.log(user);
   if (!user)
     return res.render('index', { error: "User not Found" });
   if (passwd !== user.passwd)
@@ -75,14 +72,15 @@ app.post('/login', async (req, res) => {
     return res.render('ngo_dashboard', { ngo_id, requests });
   } else if (user_type === "supplier") {
     const data = await MedicineData.find();
-    const inventory_data = await InventoryDataIndustryToSupplier.find({ supplier_id: aadhar });
-    const request_data = await InventoryRequestToSupplierByHospital.find({ supplier_id: aadhar });
+    const inventory_data = await InventoryDataIndustryToSupplier.find({ supplier_id: String(aadhar) });
+    const request_data = await InventoryRequestToSupplierByHospital.find({ supplier_id: String(aadhar) });
     return res.render('supplier_dashboard', { data, manager_id: aadhar, inventory_data, request_data });
   } else if (user_type === "industry") {
     const ind = await IndIdentity.findOne({ manager_id: aadhar });
     const ind_id = ind.ind_id;
     const medicines = await MedicineData.find({ ind_id });
     const request_data = await InventoryRequestToIndustryBySupplier.find({ ind_id });
+    console.log(request_data);
     return res.render('industry_dashboard', { ind_id, medicines, request_data });
   } else if (user_type === "rep") {
     const pending_offers = await RepOffers.find({ rep_id: aadhar, status: 'pending' });
@@ -124,7 +122,7 @@ app.post('/login', async (req, res) => {
         }
       }
     ]);
-    const approval_data = await RegistrationApprovalData.find({ approval_status: 'Not Approved' });
+    const approval_data = await RegistrationApprovalData.find({ approval_status: 'not approved' });
     const pending_blood_requests = await BloodDonationRequests.find({ status: 'pending' }).sort({ request_timestamp: -1 });
     const approved_blood_requests = await BloodDonationRequests.find({ status: 'approved' }).sort({ request_timestamp: -1 });
     const blood_units = await BloodUnitsAvailable.find().sort({ blood_group: 1 });
@@ -265,15 +263,16 @@ app.post('/payCrowdfunding',async(req,res) => {
 app.post('/approveUser', async (req, res) => {
   const { name, aadhar, mobile, type, passwd, action } = req.body;
   const details = await AclList.find({ aadhar });
-  if (details.length > 0 && action === 'approve') {
-    return res.send("User already exists with the details like this: " + details.map(row => JSON.stringify(row)).join(", "));
-  } else if (action === 'reject') {
-    await RegistrationApprovalData.deleteOne({ aadhar });
-    return res.send("Rejected Successfully");
-  } else {
+  if (action === 'approve') {
+    if (details.length > 0) {
+      return res.send("User already exists with the details like this: " + details.map(row => JSON.stringify(row)).join(", "));
+    }
     await AclList.create({ name, aadhar, mobile, passwd, user_type: type });
     await RegistrationApprovalData.deleteOne({ aadhar });
     return res.send("Approved Successfully");
+  } else if (action === 'reject') {
+    await RegistrationApprovalData.deleteOne({ aadhar });
+    return res.send("Rejected Successfully");
   }
 });
 

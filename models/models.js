@@ -361,6 +361,7 @@ const inventoryRequestToIndustryBySupplierSchema = new Schema({
   },
   requested_timestamp: {
     type: Date,
+    required: true,
     default: Date.now
   }
 }
@@ -371,7 +372,7 @@ const inventoryRequestToIndustryBySupplierSchema = new Schema({
 
 const inventoryRequestToSupplierByHospitalSchema = new Schema({
   supplier_id: {
-    type: Number,
+    type: String,
     default: null
   },
   quantity: {
@@ -403,7 +404,7 @@ const inventoryRequestToSupplierByHospitalSchema = new Schema({
 });
 const inventoryDataIndustryToSupplierSchema = new Schema({
   supplier_id: {
-    type: Number,
+    type: String,
     default: null
   },
   quantity: {
